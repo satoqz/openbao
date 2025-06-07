@@ -108,7 +108,7 @@ sboms:
     artifacts: package
 
 changelog:
-  disable: "{{ if gt (len .Env.NIGHTLY_RELEASE) 0 }}true{{ end }}"
+  disable: true
   use: github
   sort: asc
   filters:
@@ -116,34 +116,10 @@ changelog:
       - "^docs:"
       - "^test:"
 
-signs:
-  - id: cosign
-    artifacts: all
-    cmd: cosign
-    certificate: "${artifact}.pem"
-    args:
-      - "sign-blob"
-      - "--oidc-issuer=https://token.actions.githubusercontent.com"
-      - "--output-certificate=${certificate}"
-      - "--output-signature=${signature}"
-      - "${artifact}"
-      - "--yes" # needed on cosign 2.0.0+
-  - id: gpg
-    artifacts: all
-    signature: "${artifact}.gpgsig"
-    cmd: gpg
-    stdin: "{{ .Env.GPG_PASSWORD }}"
-    args:
-      - "--batch"
-      - "--default-key={{ .Env.GPG_FINGERPRINT }}"
-      - "--output=${signature}"
-      - "--detach-sign"
-      - "${artifact}"
-
 release:
   github:
-    owner: openbao
-    name: openbao{{ .Env.NIGHTLY_RELEASE }}
+    owner: satoqz
+    name: openbao
 
   prerelease: auto
   disable: false
